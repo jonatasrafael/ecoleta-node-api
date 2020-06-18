@@ -31,15 +31,15 @@ class PointsController {
   async show(request: Request, response: Response){
     const { id } = request.params;
 
-    const point = await knex('points').where('id', id).first();
+    const pointKnex = await knex('points').where('id', id).first();
 
-    if (!point){
+    if (!pointKnex){
       return response.status(400).json({message: 'Point not found.'});
     }
 
-    const serializedPoint = {
-      ...point,
-      image_url: `http://192.168.0.3:3333/uploads/${point.image}`,
+    const point = {
+      ...pointKnex,
+      image_url: `http://192.168.0.3:3333/uploads/${pointKnex.image}`,
     };
 
     const items = await knex('items')
@@ -47,7 +47,7 @@ class PointsController {
       .where('point_items.point_id', id)
       .select('items.title');
 
-    return response.json({serializedPoint, items});
+    return response.json({point, items});
 
   }
 
